@@ -21,18 +21,81 @@
 	},
 
 	/**
-	 * Initialize common objects.
+	 * Get text if argument is null.
+	 * Set text if argument exists.
+	 *
+	 * @param text label text
 	 */
-	_init: function (options) {
+	text: function (str) {
+	    var tagType = this._getTagType(),
+		type = this.$el.attr("type");
+	    if (!str) {
+		if (tagType === "INPUT" && type === "password") {
+		    this._text = this.$el.val();
+		}
+		return this._text;
+	    }
+	    
+	    switch (tagType) {
+	    case "INPUT":
+		
+		switch (type) {
+		case "button": // fall throwgh
+		case "text":
+		    this.$el.val(str);
+		    break;
+		default:
+		    throw new Error("text(): Invalid type (" + type + ")");
+		}
+		break;
+	    case "BUTTON":
+		this.$el.text(str);
+		break;
+	    case "TEXTAREA":
+		this.$el.val(str);
+		break;
+	    default:
+		throw new Error("text(): Invalid tagType (" + tagType + ")");
+	    }
+	    this._text = str
+	},
+
+	/**
+	 * reset to default text.
+	 */
+	reset: function () {
+	    this.text(this._defaultText);
+	},
+
+	/**
+	 * Check parameters
+	 */
+	_init: function (options, flags) {
 	    var msg;
+
+	    // this._PREFIX
+	    if (!this._PREFIX) {
+		msg = "this._PREFIX is NOT set.";
+		throw new Error(msg);
+	    }
+	    
 	    // el (required)
 	    if (!options.el) {
 		msg = this._PREFIX + "el is NOT set.";
-		new Error(msg);
+		throw new Error(msg);
+		
 	    }
 	    this.el = options.el;
 
+	    // text
+	    this._defaultText = options.text;
+	    this.text(options.text);
+
 	    // on click
+	    if (flags.onClick && !options.onClick) {
+		msg = this._PREFIX + "onClick is NOT set.";
+		throw new Error(msg);
+	    }
 	    this.setOnClick(options.onClick);
 	},
 
@@ -78,46 +141,13 @@
 	 * initialize button
 	 *
 	 * @param options.el id (required)
-	 * @param options.text label text of this button.
 	 * @param options.onClick callback function of click event (required)
+	 * @param options.text label text of this button.
 	 */
 	initialize: function (options) {
-	    this._init(options);
-	    //
-	    this._text = options.text;
-	    this.text(this._text);
-	},
-    
-	/**
-	 * Get text if argument is null.
-	 * Set text if argument exists.
-	 *
-	 * @param text label text
-	 */
-	text: function (str) {
-	    if (!str) {
-		return this._text;
-	    }
-	    var tagType = this._getTagType();
-
-	    switch (tagType) {
-	    case "INPUT":
-		var type = this.$el.attr("type");
-		switch (type) {
-		case "button":
-		    this.$el.val(str);    // when <input type="button">
-		    break;
-		default:
-		    throw new Error("text(): Invalid type (" + type + ")");
-		}
-		break;
-	    case "BUTTON":
-		this.$el.text(str); // when <button>
-		break;
-	    default:
-		throw new Error("text(): Invalid tagType (" + tagType + ")");
-	    }
-	    this._text = str
+	    this._init(options, {
+		onClick: true
+	    });
 	}
     });
 
@@ -136,39 +166,60 @@
 	 * @param options.onClick callback function of click event
 	 */
 	initialize: function (options) {
-	    this._init(options);
-	    //
-	    this._defaultText = options.text;
-	    this._text = this._defaultText;
-	    this.text(this._text);
+	    this._init(options, {});
 	},
-    
-	/**
-	 * Get text if the argument is null.
-	 * Set text if the argument exists.
-	 *
-	 * @param str label text
-	 */
-	text: function (str) {
-	    if (!str) {
-		return this._text;
-	    }
-	    this.$el.val(str);
-	    this._text = str;
-	},
-
-	/**
-	 * reset to default text.
-	 */
-	reset: function () {
-	    this.text(this._defaultText);
-	}
     });
 
+    var Checkbox = AbstractForm.extend({
+
+	_PREFIX: "FormBase.Checkbox: ",
+
+	initialize: function (options) {
+	    this._init(options, {});
+	},
+
+	check: function (flag) {
+	    this.$el.prop('checked', flag);
+	},
+
+	isChecked: function () {
+	    return this.$el.prop('checked');
+	}	
+    });
+
+    var Select = AbstractForm.extend({
+
+	_PREFIX: "FormBase.Select: ",
+
+	initialize: function (options) {
+	    var that = this;
+	    this._init(options, {});
+	    this.opts = options.opts;
+	    if (this.opts) {
+		this.opts.forEach(function (opt) {
+		    if (opt.selected) {
+			that.selected = opt;
+			that.$el.append("<option value='" + opt.val + "' selected>" + opt.text + "</option>");
+		    } else {
+			that.$el.append("<option value='" + opt.val + "'>" + opt.text + "</option>");
+		    }
+		});
+	    }
+	},
+
+	getSelected: function () {
+	    var dom = this.$el.first('option:selected'),
+		selectedIndex = dom.val() - 1;
+	    return this.opts[selectedIndex];
+	}
+    });
+				     
     // Aggregate functions to FormBase
     var FormBase = function () {};
     FormBase.Button = Button;
     FormBase.TextInput = TextInput;
+    FormBase.Checkbox = Checkbox;
+    FormBase.Select = Select;
 	
     // export FormBase
     window.FormBase = FormBase;
