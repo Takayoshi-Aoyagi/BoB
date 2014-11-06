@@ -127,6 +127,14 @@
 	 */
 	disable: function () {
 	    this.$el.attr("disabled", "disabled");
+	},
+
+	hide: function () {
+	    this.$el.hide();
+	},
+
+	show: function() {
+	    this.$el.show();
 	}
     });
 
@@ -135,7 +143,7 @@
      */
     var Button = AbstractForm.extend({
 	
-	_PREFIX: "FormBase.Button: ",
+	_PREFIX: "BoB.Button: ",
 
 	/**
 	 * initialize button
@@ -156,7 +164,7 @@
      */
     var TextInput = AbstractForm.extend({
 	
-	_PREFIX: "FormBase.TextArea: ",
+	_PREFIX: "BoB.TextArea: ",
 
 	/**
 	 * initialize button
@@ -172,7 +180,7 @@
 
     var Checkbox = AbstractForm.extend({
 
-	_PREFIX: "FormBase.Checkbox: ",
+	_PREFIX: "BoB.Checkbox: ",
 
 	initialize: function (options) {
 	    this._init(options, {});
@@ -189,7 +197,7 @@
 
     var Select = AbstractForm.extend({
 
-	_PREFIX: "FormBase.Select: ",
+	_PREFIX: "BoB.Select: ",
 
 	initialize: function (options) {
 	    var that = this;
@@ -214,14 +222,18 @@
 	}
     });
 				     
-    // Aggregate functions to FormBase
-    var FormBase = function () {};
-    FormBase.Button = Button;
-    FormBase.TextInput = TextInput;
-    FormBase.Checkbox = Checkbox;
-    FormBase.Select = Select;
-	
-    // export FormBase
-    window.FormBase = FormBase;
+    // Aggregate functions to BoB
+    var Form = function () {};
+    Form.Button = Button;
+    Form.TextInput = TextInput;
+    Form.Checkbox = Checkbox;
+    Form.Select = Select;
+
+    var BoB = function () {};
+    BoB.Form = Form;
+    
+    // export BoB
+    
+    window.BoB = BoB;
     
 })();
