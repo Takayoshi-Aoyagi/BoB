@@ -4,7 +4,6 @@ import json
 from pprint import pprint
 from pyh import *
 
-
 class HtmlGenerator:
 
     # JSON keys
@@ -23,8 +22,9 @@ class HtmlGenerator:
     VIEW = "view"
     BUTTON = "button"
         
-    def __init__(self):
-        self.loadConfig()
+    def __init__(self, config, file):
+        self.config = config
+        self.file = file
         
     def appendJS(self):
         jss = self.config["js"]
@@ -52,7 +52,7 @@ class HtmlGenerator:
             elif key == HtmlGenerator.CHILDREN:
                 nextChildren = child[HtmlGenerator.CHILDREN]
 
-        element = self.getTypedObject(child)
+        element = self.getTypedElement(child)
         parent << element
 
         if nextChildren == None:
@@ -60,13 +60,14 @@ class HtmlGenerator:
 
         self.appendChildren(element, nextChildren)
 
-    def getTypedObject(self, child):
+    def getTypedElement(self, child):
         type = child[HtmlGenerator.TYPE]
         id = child[HtmlGenerator.ID]
         _div = div(id = id)
         if type == HtmlGenerator.BUTTON:
             value = child[HtmlGenerator.VALUE]
-            _div << input(id = id + "_button", type = "button", value=value)
+            #_div << input(id = id + "_button", type = "button", value=value)
+            _div << input(id = id + "_button", type = "button")
         elif type == HtmlGenerator.TEXT:
             label = child[HtmlGenerator.LABEL]
             _div << p(label)
@@ -81,14 +82,5 @@ class HtmlGenerator:
         children = self.config[HtmlGenerator.CHILDREN]
         self.appendChildren(self.page, children)
 
-    def dump(self):
-        self.page.printOut()
-
-    def loadConfig(self):
-        file = open('./config.json')
-        self.config = json.load(file)
-        file.close()
-        
-gen = HtmlGenerator()
-gen.generate()
-gen.dump()
+        # output to file
+        self.page.printOut(file=self.file)

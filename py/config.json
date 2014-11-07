@@ -1,0 +1,23 @@
+{
+    "title": "HTML Generator Test Page",
+    "js": [],
+    "css": ["../css/style.css"],
+    "children": [
+	{
+	    "type": "view",
+	    "id": "main_view",
+	    "children": [
+		{
+		    "type": "text",
+		    "id": "name_input_area",
+		    "label": "NAME: "
+		},
+		{
+		    "type": "button",
+		    "id": "submit_area",
+		    "value": "SUBMIT"
+		}
+	    ]
+	}
+    ]
+}
