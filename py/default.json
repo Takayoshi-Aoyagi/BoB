@@ -3,7 +3,7 @@
         "../lib/jquery-2.1.1.min.js",
 	"../lib/underscore-min.js",
 	"../lib/backbone-min.js",
-	"../src/bob.js",
+	"../js/bob.js",
 	"./app.js"
     ]
 }

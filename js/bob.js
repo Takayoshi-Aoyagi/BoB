@@ -30,9 +30,7 @@
 	    var tagType = this._getTagType(),
 		type = this.$el.attr("type");
 	    if (!str) {
-		if (tagType === "INPUT" && type === "password") {
-		    this._text = this.$el.val();
-		}
+		this._text = this.$el.val();
 		return this._text;
 	    }
 	    
@@ -104,7 +102,10 @@
 	 * @example "INPUT", "BUTTON" ...
 	 */
 	_getTagType: function () {
-	    return this.$el[0].tagName;
+	    if (this.$el[0]) {
+		return this.$el[0].tagName;
+	    }
+	    return undefined
 	},
 	
 	/**
